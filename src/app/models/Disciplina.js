@@ -6,19 +6,27 @@ import conn from "../../config/dbConnection";
 mongoose.connect(conn.url);
 autoIncrement.initialize(mongoose);
 
-const UserSchema = new mongoose.Schema(
+const DisciplinaSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    age: {
+    codigo: {
       type: Number,
-      required: false,
+      required: true,
+    },
+    nome: {
+      type: String,
+      required: true,
+    },
+    professor: {
+      type: String,
+      required: true,
+    },
+    departamento: {
+        type: String,
+        required: true,
+    },
+    QtdCreditos: {
+        type: Number,
+        required: true,
     },
   },
   {
@@ -27,11 +35,11 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-UserSchema.plugin(autoIncrement.plugin, {
-  model: "User",
+DisciplinaSchema.plugin(autoIncrement.plugin, {
+  model: "Disciplina",
   field: "id",
   startAt: 1,
   incrementBy: 1,
 });
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("Disciplina", DisciplinaSchema);
