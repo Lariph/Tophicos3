@@ -15,6 +15,15 @@ class DisciplinaController {
 
   async store(req, res) {
     const { codigo, nome, professor, departamento, QtdCreditos } = req.body;
+    const disciplinaRepetida = await Disciplina.findOne({ 
+      codigo: codigo 
+    });
+
+    if (disciplinaRepetida) {
+      return res
+        .status(422)
+        .json({ message: "Disciplina já existe!" });
+    }
 
     if (!(codigo && nome && professor && departamento && QtdCreditos)) {
       return res
@@ -33,12 +42,29 @@ class DisciplinaController {
 
   async update(req, res) {
     const { id } = req.params;
+    const { codigo } = req.body;
 
-    const disciplinaUpdate = await Disciplina.findOne({
-      id: id,
+    const disciplinaUpdate1 = await Disciplina.findOne({
+      id: id, 
     });
 
-    if (!disciplinaUpdate) {
+    const disciplinaUpdate2 = await Disciplina.findOne({
+      codigo: codigo 
+    });
+
+    if (!(codigo)) {
+      return res
+        .status(422)
+        .json({ message: "É necessário fornecer o código da disciplina" });
+    }
+
+    if (!disciplinaUpdate2) {
+      return res
+        .status(422)
+        .json({ message: "Disciplina não existe, código inválido" });
+    }
+
+    if (!disciplinaUpdate1) {
       return res
         .status(422)
         .json({ message: "Disciplina não existe, ID inválido" });
@@ -46,13 +72,30 @@ class DisciplinaController {
 
     await Disciplina.update(req.body);
 
-    return res.status(200).json({ message: "Disciplina atualizado com sucesso!" });
+    return res.status(200).json({ message: "Disciplina atualizada com sucesso!" });
   }
 
   async delete(req, res) {
-    const disciplinaDelete = await Disciplina.findOne({ id: req.params.id });
+    const disciplinaDelete1 = await Disciplina.findOne({ id: req.params.id });
+    const { codigo } = req.body;
 
-    if (!disciplinaDelete) {
+    const disciplinaDelete2 = await Disciplina.findOne({
+      codigo: codigo 
+    });
+
+    if (!(codigo)) {
+      return res
+        .status(422)
+        .json({ message: "É necessário fornecer o código da disciplina" });
+    }
+
+    if (!disciplinaDelete2) {
+      return res
+        .status(422)
+        .json({ message: "Disciplina não existe, código inválido" });
+    }
+
+    if (!disciplinaDelete1) {
       return res
         .status(422)
         .json({ message: "Disciplina não existe, ID inválido" });
@@ -60,7 +103,7 @@ class DisciplinaController {
 
     await Disciplina.deleteOne({ id: req.params.id });
 
-    return res.json({ message: "Disciplina foi excluído!" });
+    return res.json({ message: "Disciplina foi excluída!" });
   }
 }
 
